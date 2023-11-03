@@ -30,10 +30,11 @@ class RR:
         processArray.sort(key=lambda x: x.arrivalTime)
         return processArray
 
+    # return processQueue, for use in making diagram
     def makeQueue(self):
         return self.processQueue
 
-    # calculate time it takes to complete each process following SJF logic
+    # calculate time it takes to complete each process following RR logic, return list of dictionaries
     def completionTimes(self):
         processArray = self.createProcesses()
         queue = deque(processArray)
@@ -72,20 +73,16 @@ class RR:
             sortedProcesses = sorted(processList, key=lambda x: max (x.values()))
             maxTime = list(sortedProcesses[-1].values())[0]
             finalCompletionTimes.append({i: maxTime})
-
-
-
-
         return finalCompletionTimes
 
-    # calculate the turn around times for each process
+    # calculate the turn around times for each process, return list of dictionaries
+    #   turnaround time = completion time - arrival time
     def turnAroundTimes(self):
         processArray = self.createProcesses()
         completionTimes = self.completionTimes()
         turnAroundTimes = []
         for i in processArray:
             for j in completionTimes:
-                # print(list(j.keys())[0])
                 if i.processID == list(j.keys())[0]:
                     completionTime = j.get(i.processID)
                     arrivalTime = i.arrivalTime
@@ -104,7 +101,8 @@ class RR:
         avg = (sumTAT/self.numProcesses)
         return avg
 
-    # calculate the waiting times for each process
+    # calculate the waiting times for each process, return list of dictionaries
+    #   waiting time = turnaround time - burst time
     def waitingTime(self):
         processArray = self.createProcesses()
         turnAroundTimes = self.turnAroundTimes()
@@ -134,7 +132,7 @@ class RR:
         return avg
 
     # find total time taken to complete all processes
-    # schedule length = last process completion time - arrival time of first process
+    #   schedule length = last process completion time - arrival time of first process
     def scheduleLength(self):
         processArray = self.createProcesses()
         completionTimes = self.completionTimes()
@@ -145,19 +143,19 @@ class RR:
         return scheduleLength
 
     # calculate throughput for completion of all processes
-    # throughput = number of processes/schedule length
+    #   throughput = number of processes/schedule length
     def throughput(self):
         scheduleLength = self.scheduleLength()
         throughputDec = self.numProcesses/scheduleLength
         throughput = str(self.numProcesses) + "/" + str(scheduleLength) + " (or " + str(throughputDec) + ")"
         return throughput
 
-sjf = RR(6, [0,1,2,3,4,6], [4,5,2,1,6,3], 3)
-#print(sjf.createProcesses())
-print("completion times:", sjf.completionTimes())
-# print("turn around times:", sjf.turnAroundTime())
-# print("waiting times:", sjf.waitingTime())
-# print("schedule length:", sjf.scheduleLength())
-# print("throughput:", sjf.throughput())
-# print("average turn around time:", sjf.avgTAT())
-# print("average waiting time:", sjf.avgWT())
+rr = RR(6, [0,1,2,3,4,6], [4,5,2,1,6,3], 3)
+# print(rr.createProcesses())
+print("completion times:", rr.completionTimes())
+# print("turn around times:", rr.turnAroundTime())
+# print("waiting times:", rr.waitingTime())
+# print("schedule length:", rr.scheduleLength())
+# print("throughput:", rr.throughput())
+# print("average turn around time:", rr.avgTAT())
+# print("average waiting time:", rr.avgWT())

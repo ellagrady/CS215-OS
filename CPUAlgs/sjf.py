@@ -4,8 +4,6 @@ import process
 # shortest job first algorithm
 class SJF:
 
-
-
     # initialize shortest job first object w/ number of processes, list of arrival times, and list of burst times
     def __init__(self, numProcesses, arrivalTimes, burstTimes):
         self.numProcesses = numProcesses
@@ -30,7 +28,7 @@ class SJF:
         processArray.sort(key=lambda x: x.arrivalTime)
         return processArray
 
-    # calculate time it takes to complete each process following SJF logic
+    # calculate time it takes to complete each process following SJF logic, returns list of dictionaries
     def completionTimes(self):
         processArray = self.createProcesses()
         for i in processArray:
@@ -58,11 +56,12 @@ class SJF:
             processArray.remove(shortestBurst)
         return completionTimes
 
-    # return processQueue
+    # return processQueue for use in making diagram
     def makeQueue(self):
         return self.processQueue
 
-    # calculate the turn around times for each process
+    # calculate the turn around times for each process, returns list of dictionaries
+    #   turnaround time = completion time - arrival time
     def turnAroundTimes(self):
         processArray = self.createProcesses()
         completionTimes = self.completionTimes()
@@ -90,7 +89,8 @@ class SJF:
         avg = (sumTAT/self.numProcesses)
         return avg
 
-    # calculate the waiting times for each process
+    # calculate the waiting times for each process, returns list of dictionaries
+    #   waiting time = turnaround time - burst time
     def waitingTime(self):
         processArray = self.createProcesses()
         turnAroundTimes = self.turnAroundTimes()
@@ -120,7 +120,7 @@ class SJF:
         return avg
 
     # find total time taken to complete all processes
-    # schedule length = last process completion time - arrival time of first process
+    #   schedule length = last process completion time - arrival time of first process
     def scheduleLength(self):
         processArray = self.createProcesses()
         completionTimes = self.completionTimes()
@@ -131,7 +131,7 @@ class SJF:
         return scheduleLength
 
     # calculate throughput for completion of all processes
-    # throughput = number of processes/schedule length
+    #   throughput = number of processes/schedule length
     def throughput(self):
         scheduleLength = self.scheduleLength()
         throughputDec = self.numProcesses/scheduleLength

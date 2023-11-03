@@ -1,20 +1,24 @@
 import process
 
+
 # shortest remaining time first
 class SRTF:
 
+    # initialize SRTF object
     def __init__(self, numProcesses, arrivalTimes, burstTimes):
         self.numProcesses = numProcesses
         self.arrivalTimes = arrivalTimes  # array of arrival times ordered by process id least to greatest, len = numProcesses
         self.burstTimes = burstTimes  # array of burst times ordered by process id least to greatest, len = numProcesses
         self.processQueue = []
 
+    # return list of process ids given numProcesses: (1 - numProcesses)
     def getProcessIDs(self):
         idArray = []
         for i in range(self.numProcesses):
             idArray.append(i + 1)
         return idArray
 
+    # create list of processes
     def createProcesses(self):
         processArray = []
         for i in range(self.numProcesses):
@@ -24,6 +28,7 @@ class SRTF:
         processArray.sort(key=lambda x: x.arrivalTime)
         return processArray
 
+    # calculate processesOrder, returns list of dictionaries
     def srtf(self):
         processArray = self.createProcesses()
         completedProcesses = []
@@ -31,7 +36,6 @@ class SRTF:
         processesOrder = []  # fill with dictionary items {id: start time}
         time = 0  # current time
         processOne = processArray[0]
-        hello = {1: 2}
         if processOne.arrivalTime > 0 and {"null" : ("0 -> " + str(processOne.arrivalTime))} not in self.processQueue:
             self.processQueue.append({"null": ("0 -> " + str(processOne.arrivalTime))})
         while len(completedProcesses) < self.numProcesses:
@@ -63,8 +67,11 @@ class SRTF:
 
         return processesOrder
 
+    # return processQueue, for use in making diagram
     def makeQueue(self):
         return self.processQueue
+
+    # calculate completion times, return list of dictionaries
     def completionTimes(self):
         processesOrder = self.srtf()
         processArray = self.createProcesses()
@@ -78,13 +85,14 @@ class SRTF:
             completionTimes.append(eachProcess[-1])
         return completionTimes
 
+    # calculate turnaround times, returns list of dictionaries
+    #   turnaround times = completion times - arrival times
     def turnAroundTimes(self):
         processArray = self.createProcesses()
         completionTimes = self.completionTimes()
         turnAroundTimes = []
         for i in processArray:
             for j in completionTimes:
-                # print(list(j.keys())[0])
                 if i.processID == list(j.keys())[0]:
                     completionTime = j.get(i.processID)
                     arrivalTime = i.arrivalTime
@@ -93,24 +101,24 @@ class SRTF:
                     turnAroundTimes.append(turnaroundProcess)
         return turnAroundTimes
 
+    # calculate avg turnaround time
     def avgTAT(self):
         turnAroundTimes = self.turnAroundTimes()
-        turnAroundTimesArray = []
         sumTAT = 0
         for currentProcess in turnAroundTimes:
-            # turnAroundTimesArray.append(list(currentProcess.values())[0])
             sumTAT += list(currentProcess.values())[0]
 
         avg = (sumTAT / self.numProcesses)
         return avg
 
+    # calculate waiting times for processes, returns list of dictionaries
+    #   waiting time = turnaround time - burst time
     def waitingTime(self):
         processArray = self.createProcesses()
         turnAroundTimes = self.turnAroundTimes()
         waitingTimes = []
         for i in processArray:
             for j in turnAroundTimes:
-                # print(list(j.keys())[0])
                 if i.processID == list(j.keys())[0]:
                     turnaroundTime = j.get(i.processID)
                     burstTime = i.burstTime
@@ -119,17 +127,17 @@ class SRTF:
                     waitingTimes.append(waitingProcess)
         return waitingTimes
 
+    # calculate avg wait time
     def avgWT(self):
         waitingTimes = self.waitingTime()
-        turnAroundTimesArray = []
         sumWT = 0
         for currentProcess in waitingTimes:
-            # turnAroundTimesArray.append(list(currentProcess.values())[0])
             sumWT += list(currentProcess.values())[0]
 
         avg = (sumWT / self.numProcesses)
         return avg
 
+    # calculate schedule length, last completion time - first arrival time
     def scheduleLength(self):
         processArray = self.createProcesses()
         completionTimes = self.completionTimes()
@@ -138,6 +146,7 @@ class SRTF:
         scheduleLength = lastProcess - firstProcess
         return scheduleLength
 
+    # calculate throughput, numProcesses/schedule length
     def throughput(self):
         scheduleLength = self.scheduleLength()
         throughputDec = self.numProcesses/scheduleLength
