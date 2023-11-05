@@ -11,8 +11,22 @@ import matplotlib.pyplot as plt
 
 processesQueue = ""
 
-# format string output containing all necessary calculations
-def format_output(function, numProcesses, arrivalTimesText, burstTimesText, contextSwitch_TQ=None):
+
+"""
+format string output containing all necessary calculations
+
+Args: 
+    function - str representing alg type
+    numProcesses - int, number of processes to use CPU
+    arrivalTimesText - str representation of array of arrival times of processes (ordered process 1 - numProcesses)
+    burstTimesText - str representation of array of burst times of processes (ordered process 1 - numProcesses)
+    contextSwitch_TQ - None or int, representing context switch or time quantum 
+    
+Returns: 
+    outputStr - string to be output to GUI window containing all calculations
+    
+"""
+def formatOutput(function, numProcesses, arrivalTimesText, burstTimesText, contextSwitch_TQ=None):
 
     arrivalTimes = processArray(arrivalTimesText)
     burstTimes = processArray(burstTimesText)
@@ -55,8 +69,12 @@ def format_output(function, numProcesses, arrivalTimesText, burstTimesText, cont
     return outputStr
 
 
+"""
+create the diagram of the processes in the CPU
 
-# create the diagram of the processes in the CPU
+Returns:
+    image file of diagram 
+"""
 def createDiagram():
     data = processesQueue
     processIDs = []
@@ -104,7 +122,6 @@ def createDiagram():
         else:
             labels.append(i.replace(' ', '\n'))
 
-
     # add label names
     for j in range(len(patchHandles)):
         for i, patch in enumerate(patchHandles[j]):
@@ -114,7 +131,6 @@ def createDiagram():
             ax.text(x, y, labels[j], ha='center', va='center', fontsize=12, color='white')
             print(labels[j])
 
-    # ax.set_xlim(left=0)
     customXTicks = completionTimes
     print(customXTicks)
     ax.set_xticks([0] + customXTicks)
@@ -131,35 +147,87 @@ def createDiagram():
 
     return plot_filename
 
-# process selected input for alg type from Gradio Radio object, return as str
+""" 
+process selected input for alg type from Gradio Radio object, return as str
+
+Args: 
+    inputOption - input from gr.Radio object
+
+Returns: 
+    str(inputOption) - input formatted as string
+"""
 def processRadio(inputOption):
     return str(inputOption)
 
 
-# process input data to number objects, return as int
+"""
+process input data to number objects, return as int
+
+Args:
+    inputNumber - input from gr.Number object
+    
+Returns:
+    int(inputNumber) - input formatted as int
+"""
 def processNumber(inputNumber):
     return int(inputNumber)
 
 
-# process input data to textbox objects, return as string
+""" 
+process input data to textbox objects, return as string
+
+Args: 
+    inputText - input from gr.Textbox object
+
+Returns:
+    str(inputText) - input formatted as string
+"""
 def processText(inputText):
     return str(inputText)
 
 
-# process array input data to textbox objects, return as an array
+"""
+process array input data to textbox objects, return as an array
+
+Args: 
+    inputText - input from gr.Textbox object
+
+Returns:
+    array - input formatted as a list object
+"""
 def processArray(inputText):
     array = eval(inputText)
     return array
 
 
-# set a global variable
+"""
+set a global variable
+
+Args: 
+    queue - global variable 
+
+Returns:
+    global variable processQueue to be set to input
+"""
 def setGlobal(queue):
     global processesQueue
     processesQueue = queue
     return processesQueue
 
 
-# calculate parts, calling format_output function
+"""
+calculate parts, calling formatOutput function
+
+Args:
+    algChoices - input from gr.Radio, represents algorithm choice
+    numProcesses - input from gr.Number, representing number of processes
+    arrivalTimes - input from gr.Textbox, representing array of arrival times (ordered process 1 - numProcesses)
+    burstTimes - input from gr.Textbox, representing array of burst times (ordered process 1 - numProcesses)
+    contextSwitch_TQ - None or input from gr.Number, representing set context switch or time quantum value
+    
+Returns:
+    out - return of formatOutput(algChoice, numProcessesInput, arrivalTiemsInput, burstTimesInput, contextSwitch_TQ)
+"""
 def calculateFn(algChoices, numProcesses, arrivalTimes, burstTimes, contextSwitch_TQ = None):
 
     # make sure input is correct
@@ -170,21 +238,21 @@ def calculateFn(algChoices, numProcesses, arrivalTimes, burstTimes, contextSwitc
         burstTimesInput = processText(burstTimes)
         # when contextSwitch not included
         if contextSwitch_TQ is None:
-            output = format_output(algChoice, numProcessesInput, arrivalTimesInput, burstTimesInput)
+            out = formatOutput(algChoice, numProcessesInput, arrivalTimesInput, burstTimesInput)
             print("processesQueue:", processesQueue)
-            global imageData
-            #imageData = createDiagram(processesQueue)
-            return output
+            return out
         # when contextSwitch is included
         else:
-            output = format_output(algChoice, numProcessesInput, arrivalTimesInput, burstTimesInput, contextSwitch_TQ)
+            out = formatOutput(algChoice, numProcessesInput, arrivalTimesInput, burstTimesInput, contextSwitch_TQ)
             print("processesQueue:", processesQueue)
-            #imageData = createDiagram(processesQueue)
-            return output
+            return out
     else:
         return "Invalid input."
 
-
+"""
+Create GUI from Gradio Library
+    https://github.com/gradio-app/gradio
+"""
 with gr.Blocks() as demo:
     gr.Markdown("Select the algorithm of your choosing.")
     # one window for algorithms without context switch/time quantum section

@@ -1,24 +1,61 @@
 import process
 
 
-# shortest job first algorithm
-class SJF:
+"""
+Class SJF
+Usage for Shortest Job First CPU algorithm
 
-    # initialize shortest job first object w/ number of processes, list of arrival times, and list of burst times
+Attributes:
+    numProcesses - int, number of processes
+    arrivalTimes - list, listing arrival times of each process ordered process 1 -> numProcesses
+    burstTimes - list, listing burst times of each process ordered process 1 -> numProcesses
+    timeQuantum - int, time quantum value
+
+Methods:
+    getProcessIDs() - returns list of process ids (id 1 -> id numProcesses)
+    createProcesses() - creates and returns list of process objects
+    makeQueue() - returns processQueue, for use in making diagram in GUI
+    completionTimes() - calculates and returns list of dictionaries representing processes' completion times
+    turnAroundTimes() - calculates and returns list of dictionaries representing processes' turnaround times
+    avgTAT() - calculates and returns average turnaround time from turnAroundTimes()
+    waitingTime() - calculates and returns list of dictionaries representing processes' waiting times
+    avgWT() - calculates and returns average waiting time from waitingTime()
+    scheduleLength() - calculates and returns schedule length of CPU and the processes
+    throughput() - calculates and returns throughput of CPU
+"""
+class SJF:
+    """
+    initialize SJF object
+
+    Args:
+        numProcesses - int, number of processes
+        arrivalTimes - list, listing arrival times of each process ordered process 1 -> numProcesses
+        burstTimes - list, listing burst times of each process ordered process 1 -> numProcesses
+    """
     def __init__(self, numProcesses, arrivalTimes, burstTimes):
         self.numProcesses = numProcesses
         self.arrivalTimes = arrivalTimes  # array of arrival times ordered by process id least to greatest, len = numProcesses
         self.burstTimes = burstTimes  # array of burst times ordered by process id least to greatest, len = numProcesses
         self.processQueue = []
 
-    # method to get list of process ids from 1-numProcesses
+    """
+    Returns array of processIds, calculated from entered numProcesses (1 to numProcesses)
+
+    Returns: 
+        idArray - list of ints, represents ids of all processes (1 to numProcesses)
+    """
     def getProcessIDs(self):
         idArray = []
         for i in range(self.numProcesses):
             idArray.append(i + 1)
         return idArray
 
-    # create the Process objects for each process in the SJF object
+    """
+    create the processes, return array of processes
+
+    Returns: 
+        processArray - list of process objects
+    """
     def createProcesses(self):
         processArray = []
         for i in range(self.numProcesses):
@@ -28,7 +65,21 @@ class SJF:
         processArray.sort(key=lambda x: x.arrivalTime)
         return processArray
 
-    # calculate time it takes to complete each process following SJF logic, returns list of dictionaries
+    """
+    Returns queue of processes, to be used for diagram created in GUI
+
+    Returns: 
+        processQueue - list of processes as they enter CPU (regardless of being finished)
+    """
+    def makeQueue(self):
+        return self.processQueue
+
+    """
+    Calculates completion times for each process, returns as list of dictionaries
+
+    Returns: 
+        completionTimes - list of dicts ({processID: completionTime}), represents completion times for each process
+    """
     def completionTimes(self):
         processArray = self.createProcesses()
         for i in processArray:
@@ -56,12 +107,13 @@ class SJF:
             processArray.remove(shortestBurst)
         return completionTimes
 
-    # return processQueue for use in making diagram
-    def makeQueue(self):
-        return self.processQueue
+    """
+    Calculate turnaround times for each process, returns as list of dictionaries
+        TAT = completion time - arrival time
 
-    # calculate the turn around times for each process, returns list of dictionaries
-    #   turnaround time = completion time - arrival time
+    Returns:
+        turnAroundTimes - list of dictionaries ({processID: TAT}), represents TAT for each process
+    """
     def turnAroundTimes(self):
         processArray = self.createProcesses()
         completionTimes = self.completionTimes()
@@ -79,7 +131,12 @@ class SJF:
                     turnAroundTimes.append(turnaroundProcess)
         return turnAroundTimes
 
-    # from list of all processes' turn around times, calculate average
+    """
+    Calculates average TAT from turnaround times list
+
+    Returns:
+        avg - int, average TAT from turnAroundTimes() results
+    """
     def avgTAT(self):
         turnAroundTimes = self.turnAroundTimes()
         sumTAT = 0
@@ -89,8 +146,13 @@ class SJF:
         avg = (sumTAT/self.numProcesses)
         return avg
 
-    # calculate the waiting times for each process, returns list of dictionaries
-    #   waiting time = turnaround time - burst time
+    """
+    Calculate wait times, returns as list of dictionaries
+        WT = TAT - burst time
+
+    Returns: 
+        waitingTimes - list of dictionaries ({processID: WT}), representing wait time of each process
+    """
     def waitingTime(self):
         processArray = self.createProcesses()
         turnAroundTimes = self.turnAroundTimes()
@@ -107,7 +169,12 @@ class SJF:
                     waitingTimes.append(waitingProcess)
         return waitingTimes
 
-    # from list of all processes' turn around times, calculate average
+    """
+    Calculate average wait time from waiting times list
+
+    Returns: 
+        avg - average from results of waitingTime()
+    """
     def avgWT(self):
         waitingTimes = self.waitingTime()
         turnAroundTimesArray = []
@@ -119,8 +186,13 @@ class SJF:
         avg = (sum/self.numProcesses)
         return avg
 
-    # find total time taken to complete all processes
-    #   schedule length = last process completion time - arrival time of first process
+    """ 
+    Calculate length of CPU action
+        scheduleLength = last process completion time - first process arrival time
+
+    Returns:
+        scheduleLength - int, total length of time CPU is in action
+    """
     def scheduleLength(self):
         processArray = self.createProcesses()
         completionTimes = self.completionTimes()
@@ -130,8 +202,13 @@ class SJF:
         scheduleLength = (list(lastProcess.values())[0]) - startProcess.arrivalTime
         return scheduleLength
 
-    # calculate throughput for completion of all processes
-    #   throughput = number of processes/schedule length
+    """
+    Calculate throughput
+       throughput = numProcesses/scheduleLength
+    
+    Returns:
+        throughput - int, processes to time ratio
+    """
     def throughput(self):
         scheduleLength = self.scheduleLength()
         throughputDec = self.numProcesses/scheduleLength

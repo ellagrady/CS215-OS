@@ -1,24 +1,62 @@
 import process
 
 
-# shortest remaining time first
+"""
+Class SRTF
+Usage for Shortest Remaining Time First CPU algorithm
+
+Attributes:
+    numProcesses - int, number of processes
+    arrivalTimes - list, listing arrival times of each process ordered process 1 -> numProcesses
+    burstTimes - list, listing burst times of each process ordered process 1 -> numProcesses
+
+Methods:
+    getProcessIDs() - returns list of process ids (id 1 -> id numProcesses)
+    createProcesses() - creates and returns list of process objects
+    srtf() - calculates and returns list of processes order
+    makeQueue() - returns processQueue, for use in making diagram in GUI
+    completionTimes() - calculates and returns list of dictionaries representing processes' completion times
+    turnAroundTimes() - calculates and returns list of dictionaries representing processes' turnaround times
+    avgTAT() - calculates and returns average turnaround time from turnAroundTimes()
+    waitingTime() - calculates and returns list of dictionaries representing processes' waiting times
+    avgWT() - calculates and returns average waiting time from waitingTime()
+    scheduleLength() - calculates and returns schedule length of CPU and the processes
+    throughput() - calculates and returns throughput of CPU
+"""
 class SRTF:
 
-    # initialize SRTF object
+    """
+    initialize SRTF object
+
+    Args:
+        numProcesses - int, number of processes
+        arrivalTimes - list, listing arrival times of each process ordered process 1 -> numProcesses
+        burstTimes - list, listing burst times of each process ordered process 1 -> numProcesses
+    """
     def __init__(self, numProcesses, arrivalTimes, burstTimes):
         self.numProcesses = numProcesses
         self.arrivalTimes = arrivalTimes  # array of arrival times ordered by process id least to greatest, len = numProcesses
         self.burstTimes = burstTimes  # array of burst times ordered by process id least to greatest, len = numProcesses
         self.processQueue = []
 
-    # return list of process ids given numProcesses: (1 - numProcesses)
+    """
+    Returns array of processIds, calculated from entered numProcesses (1 to numProcesses)
+
+    Returns: 
+        idArray - list of ints, represents ids of all processes (1 to numProcesses)
+    """
     def getProcessIDs(self):
         idArray = []
         for i in range(self.numProcesses):
             idArray.append(i + 1)
         return idArray
 
-    # create list of processes
+    """
+    create the processes, return array of processes
+
+    Returns: 
+        processArray - list of process objects
+    """
     def createProcesses(self):
         processArray = []
         for i in range(self.numProcesses):
@@ -28,7 +66,13 @@ class SRTF:
         processArray.sort(key=lambda x: x.arrivalTime)
         return processArray
 
-    # calculate processesOrder, returns list of dictionaries
+    """
+    Calculates processesOrder, returns list of dictionaries
+    
+    Returns:
+        processesOrder - list of dictionaries ({id: time process stops running at}), 
+            not completion times but accounts for preemptive nature
+    """
     def srtf(self):
         processArray = self.createProcesses()
         completedProcesses = []
@@ -67,11 +111,21 @@ class SRTF:
 
         return processesOrder
 
-    # return processQueue, for use in making diagram
+    """
+    Returns queue of processes, to be used for diagram created in GUI
+
+    Returns: 
+        processQueue - list of processes as they enter CPU (regardless of being finished)
+    """
     def makeQueue(self):
         return self.processQueue
 
-    # calculate completion times, return list of dictionaries
+    """
+    Calculates completion times for each process using srtf() fn, returns as list of dictionaries
+
+    Returns: 
+        completionTimes - list of dicts ({processID: completionTime}), represents completion times for each process
+    """
     def completionTimes(self):
         processesOrder = self.srtf()
         processArray = self.createProcesses()
@@ -85,8 +139,13 @@ class SRTF:
             completionTimes.append(eachProcess[-1])
         return completionTimes
 
-    # calculate turnaround times, returns list of dictionaries
-    #   turnaround times = completion times - arrival times
+    """
+    Calculate turnaround times for each process, returns as list of dictionaries
+        TAT = completion time - arrival time
+
+    Returns:
+        turnAroundTimes - list of dictionaries ({processID: TAT}), represents TAT for each process
+    """
     def turnAroundTimes(self):
         processArray = self.createProcesses()
         completionTimes = self.completionTimes()
@@ -101,7 +160,12 @@ class SRTF:
                     turnAroundTimes.append(turnaroundProcess)
         return turnAroundTimes
 
-    # calculate avg turnaround time
+    """
+    Calculates average TAT from turnaround times list
+
+    Returns:
+        avg - int, average TAT from turnAroundTimes() results
+    """
     def avgTAT(self):
         turnAroundTimes = self.turnAroundTimes()
         sumTAT = 0
@@ -111,8 +175,13 @@ class SRTF:
         avg = (sumTAT / self.numProcesses)
         return avg
 
-    # calculate waiting times for processes, returns list of dictionaries
-    #   waiting time = turnaround time - burst time
+    """
+    Calculate wait times, returns as list of dictionaries
+        WT = TAT - burst time
+
+    Returns: 
+        waitingTimes - list of dictionaries ({processID: WT}), representing wait time of each process
+    """
     def waitingTime(self):
         processArray = self.createProcesses()
         turnAroundTimes = self.turnAroundTimes()
@@ -127,7 +196,12 @@ class SRTF:
                     waitingTimes.append(waitingProcess)
         return waitingTimes
 
-    # calculate avg wait time
+    """
+    Calculate average wait time from waiting times list
+
+    Returns: 
+        avg - average from results of waitingTime()
+    """
     def avgWT(self):
         waitingTimes = self.waitingTime()
         sumWT = 0
@@ -137,7 +211,13 @@ class SRTF:
         avg = (sumWT / self.numProcesses)
         return avg
 
-    # calculate schedule length, last completion time - first arrival time
+    """ 
+    Calculate length of CPU action
+        scheduleLength = last process completion time - first process arrival time
+
+    Returns:
+        scheduleLength - int, total length of time CPU is in action
+    """
     def scheduleLength(self):
         processArray = self.createProcesses()
         completionTimes = self.completionTimes()
@@ -146,7 +226,13 @@ class SRTF:
         scheduleLength = lastProcess - firstProcess
         return scheduleLength
 
-    # calculate throughput, numProcesses/schedule length
+    """
+    Calculate throughput
+        throughput = numProcesses/scheduleLength
+
+    Returns:
+        throughput - int, processes to time ratio
+    """
     def throughput(self):
         scheduleLength = self.scheduleLength()
         throughputDec = self.numProcesses/scheduleLength
