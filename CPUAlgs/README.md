@@ -16,7 +16,8 @@ The file guiwindow.py (and app.py which is the same code) creates a GUI build on
 App.py is the same code as guiwindow.py, written out to allow for the GUI window to be deployed to a stable, permanent link hosted on HuggingFaces Spaces that hosts Gradio applications, rather than requiring the program to be run for the GUI to be deployed in the user's browser manually. The application can be accessed at https://huggingface.co/spaces/ellagrady/CPUalg 
 
 When run on local server, it generates a window that looks like this:
-![](/Users/ellagrady/Desktop/Screen Shot 2023-11-16 at 3.46.11 PM.png)
+![image](https://github.com/ellagrady/CS215/assets/123561564/db36c5ee-2f93-44c8-8b33-78370e59ff66)
+
 
 On HuggingFaces Spaces it looks like this:
-![](/Users/ellagrady/Desktop/Screen Shot 2023-11-16 at 3.48.17 PM.png)
+![image](https://github.com/ellagrady/CS215/assets/123561564/3f0e0186-234b-4b50-bfde-0a90e05f64dc)
