@@ -51,7 +51,7 @@ class SJF:
         return idArray
 
     """
-    create the processes, return array of processes
+    create the processes, return array of processes, sorted by arrival times least to greatest
 
     Returns: 
         processArray - list of process objects
@@ -215,7 +215,7 @@ class SJF:
         throughput = str(self.numProcesses) + "/" + str(scheduleLength) + " (or " + str(throughputDec) + ")"
         return throughput
 
-sjf = SJF(5, [1, 2, 3, 4, 5], [7, 5, 1, 2, 8])
+sjf = SJF(5, [5,4,3,2,1], [7, 5, 1, 2, 8])
 print("process queue:", sjf.makeQueue())
 print("completion times:", sjf.completionTimes())
 print("process queue:", sjf.makeQueue())

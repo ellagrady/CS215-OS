@@ -56,7 +56,7 @@ class FCFS:
         return idArray
 
     """
-    create the processes, return array of processes
+    create the processes, return array of processes, sorted by arrival times least to greatest
     
     Returns: 
         processArray - list of process objects

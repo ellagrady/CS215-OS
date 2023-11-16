@@ -54,7 +54,7 @@ class RR:
         return idArray
 
     """
-    create the processes, return array of processes
+    create the processes, return array of processes, sorted by arrival time least to greatest
 
     Returns: 
         processArray - list of process objects
@@ -63,7 +63,7 @@ class RR:
         processArray = []
         for i in range(self.numProcesses):
             processID = i + 1
-            currentProcess = process.process(processID, self.arrivalTimes[i], self.burstTimes[i])
+            currentProcess = process.process(processID, self.arrivalTimes[i], self.burstTimes[i], self.burstTimes[i])
             processArray.append(currentProcess)
         processArray.sort(key=lambda x: x.arrivalTime)
         return processArray
@@ -84,44 +84,70 @@ class RR:
         completionTimes - list of dicts ({processID: completionTime}), represents completion times for each process
     """
     def completionTimes(self):
+        # create processes array
         processArray = self.createProcesses()
-        queue = deque(processArray)
-        completionTimes = []  # To store the order of process completion
-        currentTime = 0
+        for x in processArray:
+            print(x.processID)
 
-        while queue:
-            currentProcess = queue.popleft()
-            if currentProcess.arrivalTime > currentTime:
-                # Process arrives later, push it to the end of the queue
-                currentTime = currentProcess.arrivalTime
-                queue.append(currentProcess)
+        completionTimes = []
+        self.processQueue = []  # Track order of processes for diagram creation
+
+        readyQueue = []  # queue of processes ready for execution
+        currentTime = processArray[0].arrivalTime
+        unfinishedProcesses = list(processArray)  # Keep track of processes that are not  completed
+
+        #
+        while sum(process.remainingTime for process in processArray) > 0 and len(unfinishedProcesses) > 0:
+            if len(readyQueue) == 0 and len(unfinishedProcesses) > 0:
+                # add first process to ready queue
+                readyQueue.append(unfinishedProcesses[0])
+                currentTime = readyQueue[0].arrivalTime
+
+            processToExecute = readyQueue[0]
+
+            if processToExecute.remainingTime <= self.timeQuantum:
+                # if burst time less than or equal to time quantum, execute until finished
+                remainingTime = processToExecute.remainingTime
+                processToExecute.remainingTime -= remainingTime
+                currentTime += remainingTime
+
+                # Record the completion time of the process
+                self.processQueue.append({
+                    processToExecute.processID: int(currentTime)})
             else:
-                if currentProcess.burstTime <= self.timeQuantum:
-                    # Process completes within the time slice
-                    completionTimes.append({currentProcess.processID: int(currentTime + currentProcess.burstTime)})
-                    currentTime += currentProcess.burstTime
-                else:
-                    # Process still needs more time
-                    completionTimes.append({currentProcess.processID: int(currentTime + self.timeQuantum)})
-                    currentTime += self.timeQuantum
-                    currentProcess.burstTime = currentProcess.burstTime - self.timeQuantum
-                    queue.append(currentProcess)
+                # Execute for the time quantum
+                processToExecute.remainingTime -= self.timeQuantum
+                currentTime += self.timeQuantum
 
-        self.processQueue = completionTimes
+                # Record the completion time of the process
+                self.processQueue.append({
+                    processToExecute.processID:int(currentTime)})
 
-        finalCompletionTimes = []
+            arrivingProcess = []
+            for p in processArray:
+                # Find processes that arrive during the current execution
+                if p.arrivalTime <= currentTime and p != processToExecute and p not in readyQueue and p in unfinishedProcesses:
+                    arrivingProcess.append(p)
 
-        for i in self.getProcessIDs():
+            readyQueue.extend(arrivingProcess)
+            readyQueue.append(readyQueue.pop(0))  # Move the executed process to the end of the queue
 
-            processList = []
-            for process in completionTimes:
-                if i == (list(process.keys())[0]):
-                    processList.append(process)
+            if processToExecute.remainingTime == 0:
+                # Remove completed process from the unfinished processes and ready queue
+                unfinishedProcesses.remove(processToExecute)
+                readyQueue.remove(processToExecute)
 
-            sortedProcesses = sorted(processList, key=lambda x: max (x.values()))
-            maxTime = list(sortedProcesses[-1].values())[0]
-            finalCompletionTimes.append({i: maxTime})
-        return finalCompletionTimes
+                # Record completion time of the process
+                completionTimes.append({
+                    processToExecute.processID: int(currentTime),
+                })
+
+        # Sort completion times based on process ID
+        completionTimes = sorted(completionTimes, key=lambda x: list(x.keys())[0])
+
+        return completionTimes
+
+
 
     """
     Calculate turnaround times for each process, returns as list of dictionaries
@@ -228,12 +254,12 @@ class RR:
         throughput = str(self.numProcesses) + "/" + str(scheduleLength) + " (or " + str(throughputDec) + ")"
         return throughput
 
-rr = RR(6, [0,1,2,3,4,6], [4,5,2,1,6,3], 3)
+rr = RR(6, [0,1,2,3,4,6], [4,5,2,1,6,3], 2)
 # print(rr.createProcesses())
 print("completion times:", rr.completionTimes())
-# print("turn around times:", rr.turnAroundTime())
-# print("waiting times:", rr.waitingTime())
-# print("schedule length:", rr.scheduleLength())
-# print("throughput:", rr.throughput())
-# print("average turn around time:", rr.avgTAT())
-# print("average waiting time:", rr.avgWT())
+print("turn around times:", rr.turnAroundTimes())
+print("waiting times:", rr.waitingTime())
+print("schedule length:", rr.scheduleLength())
+print("throughput:", rr.throughput())
+print("average turn around time:", rr.avgTAT())
+print("average waiting time:", rr.avgWT())
