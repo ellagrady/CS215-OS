@@ -281,10 +281,10 @@ with gr.Blocks() as demo:
         algChoices = gr.Radio(["SJF", "SRTF", "LJF"], label="Algorithms", interactive=True)
         numProcesses = gr.Number(label="Number of Processes", interactive=True)
         arrivalTimes = gr.Textbox(
-            label="Arrival Times (formatted as an array, ordered by process ID 1-numProcesses, contained within [])",
+            label="Arrival Times (formatted as an array, ordered by process ID 1-numProcesses, contained within [], separated by commas)",
             interactive=True)
         burstTimes = gr.Textbox(
-            label="Burst Times (formatted as an array, ordered by process ID 1-numProcesses, contained within [])",
+            label="Burst Times (formatted as an array, ordered by process ID 1-numProcesses, contained within [], separated by commas)",
             interactive=True)
 
         calculate = gr.Button(value="Calculate!")
@@ -304,10 +304,10 @@ with gr.Blocks() as demo:
         algChoices = gr.Radio(["FCFS", "RR"], label="Algorithms", interactive=True)
         numProcesses = gr.Number(label="Number of Processes", interactive=True)
         arrivalTimes = gr.Textbox(
-            label="Arrival Times (formatted as an array, ordered by process ID 1-numProcesses, contained within [])",
+            label="Arrival Times (formatted as an array, ordered by process ID 1-numProcesses, contained within [], separated by commas)",
             interactive=True)
         burstTimes = gr.Textbox(
-            label="Burst Times (formatted as an array, ordered by process ID 1-numProcesses, contained within [])",
+            label="Burst Times (formatted as an array, ordered by process ID 1-numProcesses, contained within [], separated by commas)",
             interactive=True)
         contextSwitch_TQ = gr.Number(label="Context Switch (FCFS) | Time Quantum (RR)", interactive=True)
 
