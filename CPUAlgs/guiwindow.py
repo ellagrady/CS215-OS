@@ -139,6 +139,8 @@ def createDiagram():
     ax.set_yticks([])
     ax.set_title("CPU Scheduling")
 
+    ax.legend()
+
     plt.tight_layout()
 
     # Save the plot to a file and return the file name
