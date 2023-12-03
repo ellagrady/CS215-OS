@@ -13,9 +13,12 @@ The file memgui.py (and app.py which is the same code) creates a GUI build on th
 
 In addition to this option, there is also a collapsible section of the window, which will show the  memory allocations by algorithm. Under here, users can select an algorithm, and be given the written out allocation calculations for it, as well as generate an image that displays a diagram of the allocations. 
 
-App.py is the same code as memgui.py, written out to allow for the GUI window to be deployed to a stable, permanent link hosted on HuggingFaces Spaces that hosts Gradio applications, rather than requiring the program to be run for the GUI to be deployed in the user's browser manually. The application can be accessed at
+App.py is the same code as memgui.py, written out to allow for the GUI window to be deployed to a stable, permanent link hosted on HuggingFaces Spaces that hosts Gradio applications, rather than requiring the program to be run for the GUI to be deployed in the user's browser manually. The application can be accessed at https://huggingface.co/spaces/ellagrady/MemAllocate 
 
-When run on local server, it generates a window that looks like this:
+When run on local server, it generates a window that looks like this: 
+![image](https://github.com/ellagrady/CS215/assets/123561564/cd5a9edc-8808-4bb0-9d92-21ad780761d3)
+![image](https://github.com/ellagrady/CS215/assets/123561564/c2ac7f8e-56d3-45f1-8128-58fe4b9c3311)
 
 
 On HuggingFaces Spaces it looks like this:
+![image](https://github.com/ellagrady/CS215/assets/123561564/0a8d31dd-86a3-43fd-9342-8f11630137ac)
