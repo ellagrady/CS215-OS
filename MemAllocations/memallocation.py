@@ -1,4 +1,31 @@
 import time
+
+"""
+Class MemoryAllocation
+Create object to be calculating memory allocations for given different algorithms
+
+Attributes: 
+    freeBlocks - dictionary, user input information for memory blocks and sizes, saved with letter ids
+    allocations - dictionary, user input information for processes and sizes, saved with letter ids
+
+Methods: 
+    arrayToDict(inputArr) - given an array, creates & returns dictionary with ids given in reverse alphabetical order
+    firstFitAllocation(processesArr) - given processes, determines allocation order based on First Fit algorithm
+                                        saves allocation information to allocations dict, returns execution time
+    nextFitAllocation(processesArr) - given processes, determines allocation order based on Next Fit algorithm
+                                        saves allocation information to allocations dict, returns execution time
+    bestFitAllocation(processesArr) - given processes, determines allocation order based on Best Fit algorithm
+                                        saves allocation information to allocations dict, returns execution time
+    worstFitAllocation(processesArr) - given processes, determines allocation order based on Worst Fit algorithm
+                                        saves allocation information to allocations dict, returns execution time
+    metrics() - calculates & returns metrics for an allocation (total memory, allocated memory, internal & external fragmentation)
+    bestAlgorithm(freeBlocks, processes, determinant) - determines best algorithm based on given determinant (totalMem, allocatedMem, internalFragmentation, externalFragmentation, executionTime)
+                                        returns name of best algorithm, and results dictionary with calculated metrics of each algorithm
+    memoryLayout() - returns string representation for memory layout after allocations
+    printResults() - returns string representation of memory layout after allocations and the allocations            
+"""
+
+
 class MemoryAllocation:
     """
     Initialize MemoryAllocation with free memory blocks and an allocation dictionary self.freeBlocks
@@ -6,37 +33,40 @@ class MemoryAllocation:
     Args:
         blocks - list, array of memory block sizes
     """
+
     def __init__(self, blocks):
         alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        self.freeBlocks = {alphabet[i]:element for i, element in enumerate(blocks)}
+        self.freeBlocks = {alphabet[i]: element for i, element in enumerate(blocks)}
         self.allocations = {}
 
     """
     Give each process a label 
-    
+
     Args:  
         inputArr - list, array of process sizes
-        
+
     Returns: 
         result - dictionary, each process in inputArr with key = letter label, value = process size
     """
+
     def arrayToDict(self, inputArr):
         # Map each element of the array to a letter in the alphabet
         reverseAlphabet = 'ZYXWVUTSRQPONMLKJIHGFEDBCA'
         # Create a dictionary combining the alphabet letters and array elements
-        result = {reverseAlphabet[i]: element for i, element in enumerate(inputArr)}
+        result = {('P.' + reverseAlphabet[i]): element for i, element in enumerate(inputArr)}
 
         return result
 
     """
     Implementation of First Fit Algorithm
-    
+
     Args:
         processesArr - list, array of process sizes
-    
+
     Returns:
         executionTime - float, time execution took
     """
+
     def firstFitAllocation(self, processesArr):
         # create dictionary
         processes = self.arrayToDict(processesArr)
@@ -69,6 +99,7 @@ class MemoryAllocation:
     Returns:
         executionTime - float, time execution took
     """
+
     def nextFitAllocation(self, processesArr):
         # create dictionary
         processes = self.arrayToDict(processesArr)
@@ -103,6 +134,7 @@ class MemoryAllocation:
     Returns:
         executionTime - float, time execution took
     """
+
     def bestFitAllocation(self, processesArr):
         # create dictionary
         processes = self.arrayToDict(processesArr)
@@ -139,6 +171,7 @@ class MemoryAllocation:
     Returns:
         executionTime - float, time execution took
     """
+
     def worstFitAllocation(self, processesArr):
         # create dictionary
         processes = self.arrayToDict(processesArr)
@@ -167,20 +200,21 @@ class MemoryAllocation:
 
     """
     Calculates memory-related metrics (total memory, allocated memory, internal and external fragmentation)
-    
+
     Returns:
         totalMem - total available memory for future allocations, sum of all free memory blocks
         allocatedMem - total memory that is currently in use by processes, sum of sizes of all allocated blocks 
         internalFragmentTotal - total memory currently internally fragmented, sum of differences between block sizes and allocation sizes
         externalFragmentTotal - total memory currently externally fragmented, sum of leftover free block sizes
     """
+
     def metrics(self):
         # total available memory for future allocations, sum of all free mem blocks
         totalMem = sum(self.freeBlocks.values())
         # total memory in use, sum of sizes of allocated blocks
         allocatedMem = sum([allocation[1] for allocation in self.allocations.values() if allocation])
         internalFragmentTotal = 0  # total memory currently internal fragmentation
-        for processID, allocation  in self.allocations.items():
+        for processID, allocation in self.allocations.items():
             # sum of differences between block sizes and allocation sizes
             if allocation:
                 blockID, allocatedSize = allocation
@@ -194,35 +228,43 @@ class MemoryAllocation:
 
     """
     Determines best algorithm for given processes and memory blocks, for given determinant
-    
+
     Args:
         freeBlocks - list, array of memory block sizes
         processes - list, array of process sizes
         determinant - str, what algorithms should be judged on
                     could be: [totalMem, allocatedMem, internalFragmentation, externalFragmentation, executionTime]
-    
+
     Returns:
         bestAlg - name of best suited algorithm
         results - dictionary, contains metrics for each algorithm
     """
+
     def bestAlgorithm(self, freeBlocks, processes, determinant):
         results = {}
         for algName in ["first fit", "next fit", "best fit", "worst fit"]:
-            memoryAllocate = MemoryAllocation(freeBlocks.copy()) # create new MemoryAllocation instance for each algorithm
+            memoryAllocate = MemoryAllocation(
+                freeBlocks.copy())  # create new MemoryAllocation instance for each algorithm
             # execute corresponding memory allocation algorithm and get information for
             executionTime = getattr(memoryAllocate, f"{algName.lower().replace(' f', 'F')}Allocation")(processes.copy())
             # calculate metrics for algorithm's performance
             totalMem, allocatedMem, internalFragmentTotal, externalFragmentTotal = memoryAllocate.metrics()
             # store results in results dictionary
-            results[algName] = {"totalMem": totalMem, "allocatedMem": allocatedMem,"internalFragmentation": internalFragmentTotal, "externalFragmentation": externalFragmentTotal, "executionTime": executionTime}
+            results[algName] = {"totalMem": totalMem, "allocatedMem": allocatedMem,
+                                "internalFragmentation": internalFragmentTotal,
+                                "externalFragmentation": externalFragmentTotal, "executionTime": executionTime}
 
         # determine best algorithm based on given determinant
-        bestAlg = min(results, key= lambda x: results[x][determinant])
+        bestAlg = min(results, key=lambda x: results[x][determinant])
         return bestAlg, results
 
     """
     Displays memory layout
+
+    Returns:
+        out - str, representation of Memory Layout
     """
+
     def memoryLayout(self):
         out = "Memory Layout After Allocation:\n"
         # for each block print its id and free memory size
@@ -230,9 +272,14 @@ class MemoryAllocation:
             out += f"Block {blockID}: {blockSize} KB free\n"
 
         return out
+
     """
     Displays memory layout and allocations
+
+    Returns:
+        out - str, representation of allocation results
     """
+
     def printResults(self):
         # display memory layout
         out = self.memoryLayout()
@@ -242,13 +289,15 @@ class MemoryAllocation:
             # for each process output its allocation
             if allocation:
                 blockID, allocatedSize = allocation
-                out += f"\nProcess " + str(processID) + " allocated to Block " + str(blockID) + " (" + str(allocatedSize) + " KB)"
+                out += f"\nProcess " + str(processID) + " allocated to Block " + str(blockID) + " (" + str(
+                    allocatedSize) + " KB)"
             else:
                 out += "\nProcess " + str(processID) + " could not be allocated."
         return out
 
+
 if __name__ == "__main__":
-    freeBlocksExample = [50,150,300,350,600]
+    freeBlocksExample = [50, 150, 300, 350, 600]
     processExample = [300, 25, 125, 50]
 
     memAllocate = MemoryAllocation(freeBlocksExample)
@@ -261,7 +310,7 @@ if __name__ == "__main__":
             f"{algorithmName}: Total Available Memory={metrics['totalMem']} KB, Allocated Memory in Use={metrics['allocatedMem']} KB, External Fragmentation={metrics['externalFragmentation']} KB, Internal Fragmentation={metrics['internalFragmentation']} KB, Execution Time = {metrics['executionTime']}")
 # Example usage:
 if __name__ == "__main__":
-    freeBlocksExample = [50,150,300,350,600]
+    freeBlocksExample = [50, 150, 300, 350, 600]
     processesExample = [300, 24, 125, 50]
 
     memoryAllocator = MemoryAllocation(freeBlocksExample)

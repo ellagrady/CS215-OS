@@ -3,9 +3,19 @@ import gradio as gr
 import memallocation as ma
 
 import matplotlib.pyplot as plt
-import numpy as np
 
+"""
+format string output containing all necessary calculations
 
+Args: 
+    blocks - str, user input list of memory block sizes
+    processes - str, user input list of process sizes
+    determinant - str, user input choice of determinant factor
+
+Returns: 
+    out - string to be output to GUI window containing all metrics information
+
+"""
 def formatOutput(blocks, processes, determinant):
     freeBlocks = eval(blocks)
     processArr = eval(processes)
@@ -18,6 +28,18 @@ def formatOutput(blocks, processes, determinant):
         out += f"{algorithmName.upper()}: \n\tTotal Available Memory={metrics['totalMem']} KB, \n\tAllocated Memory in Use={metrics['allocatedMem']} KB, \n\tExternal Fragmentation={metrics['externalFragmentation']} KB, \n\tInternal Fragmentation={metrics['internalFragmentation']} KB, \n\tExecution Time = {metrics['executionTime']}\n"
     return out
 
+"""
+format string output containing for extra allocation information
+
+Args: 
+    blocks - str, user input list of memory block sizes
+    processes - str, user input list of process sizes
+    determinant - str, user input choice of determinant factor
+
+Returns: 
+    outputStr - string to be output to GUI window containing all additional allocation information
+
+"""
 def furtherAllocationInformation(blocks, processes, algorithm):
     memoryAllocator = ma.MemoryAllocation(eval(blocks))
     processArray = memoryAllocator.arrayToDict(eval(processes))
@@ -34,7 +56,8 @@ def furtherAllocationInformation(blocks, processes, algorithm):
         memoryAllocator.worstFitAllocation(eval(processes))
     out2 = memoryAllocator.printResults()
 
-    return str(out) + "\n\n" + str(out2)
+    outputStr = str(out) + "\n\n" + str(out2)
+    return outputStr
 
 """
 create the diagram of the memory blocks and process allocations
