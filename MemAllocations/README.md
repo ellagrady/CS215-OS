@@ -2,10 +2,10 @@ CS 215 - Operating Systems, Fall 2023 @ Clark University Ella Grady
 
 Memory Allocations Assignment Classes for following algorithms:
 
-First Fit
-Next Fit
-Best Fit
-Worst Fit
+• First Fit
+• Next Fit
+• Best Fit
+• Worst Fit
 
 Each of the algorithms are found within the memallocation.py file, under the MemoryAllocation class. MemoryAllocation objects are initialized with input of an array containing the sizes of free memory blocks. From there that array is used to make a dictionary, where each block is assigned a block id, a letter assigned in alphabetical order. Each algorithm function is structured in a similar way, all taking an input of an array representing the sizes of given processes. This processes array is made into a dictionary like the freeBlocks dictionary, where they are assigned a letter process ID, in reverse alphabetical order, with a 'P.' at the beginning to denote it is a process. From there the processes and freeBlocks dictionaries are used to compute the memory allocations orders for the algorithm. 
 
