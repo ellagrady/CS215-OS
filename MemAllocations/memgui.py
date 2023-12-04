@@ -123,7 +123,7 @@ def createDiagram(blocks, processes, algorithm):
 
     ax.set_yticks([])
     ax.set_ylabel('Memory Block Sizes')
-    ax.set_title('Memory Block Allocations')
+    ax.set_title(f'Memory Block Allocations: {algorithm}')
 
 
     ax.legend()
