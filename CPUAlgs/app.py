@@ -305,7 +305,10 @@ with gr.Blocks() as demo:
         createBtn = gr.Button(value="Create Diagram")
 
         createBtn.click(createDiagram, inputs=None, outputs=gr.Image(type="pil"))
-
+    markdownText = """
+    Ella Grady | November 16, 2023 | Clark University - CS 215
+    """
+    gr.Markdown(markdownText)
 
 demo.launch(share=True)
 
